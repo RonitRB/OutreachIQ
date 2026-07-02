@@ -1,19 +1,28 @@
+const mongoose = require('mongoose');
 const AppliedJob = require('../models/AppliedJob');
+
+// Strip HTML tags to prevent XSS in stored data
+const sanitize = (str) => {
+  if (typeof str !== 'string') return '';
+  return str.replace(/<[^>]*>/g, '').trim();
+};
+
+const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
 
 const saveApplication = async (req, res) => {
   try {
     const applicationData = {
       userId: req.user._id,
-      jobId: req.body.jobId,
-      title: req.body.title,
-      company: req.body.company,
-      location: req.body.location,
-      applyUrl: req.body.applyUrl,
+      jobId: sanitize(req.body.jobId),
+      title: sanitize(req.body.title),
+      company: sanitize(req.body.company),
+      location: sanitize(req.body.location),
+      applyUrl: sanitize(req.body.applyUrl),
       status: req.body.status || 'draft_created',
-      draftUrl: req.body.draftUrl,
-      emailSubject: req.body.emailSubject,
-      templateUsed: req.body.templateUsed,
-      toneUsed: req.body.toneUsed,
+      draftUrl: sanitize(req.body.draftUrl),
+      emailSubject: sanitize(req.body.emailSubject),
+      templateUsed: sanitize(req.body.templateUsed),
+      toneUsed: sanitize(req.body.toneUsed),
     };
 
     const application = await AppliedJob.create(applicationData);
@@ -42,6 +51,10 @@ const updateStatus = async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
+
+    if (!isValidObjectId(id)) {
+      return res.status(400).json({ error: true, message: 'Invalid application ID' });
+    }
 
     if (!status) {
       return res.status(400).json({ error: true, message: 'Status is required' });
@@ -79,6 +92,10 @@ const updateStatus = async (req, res) => {
 const deleteApplication = async (req, res) => {
   try {
     const { id } = req.params;
+
+    if (!isValidObjectId(id)) {
+      return res.status(400).json({ error: true, message: 'Invalid application ID' });
+    }
 
     const application = await AppliedJob.findById(id);
 

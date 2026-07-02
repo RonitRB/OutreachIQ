@@ -25,7 +25,6 @@ const getMe = (req, res) => {
   }
   return res.json({
     _id: req.user._id,
-    googleId: req.user.googleId,
     email: req.user.email,
     name: req.user.name,
     avatar: req.user.avatar,
