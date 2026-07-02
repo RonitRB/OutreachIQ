@@ -8,6 +8,7 @@ const REQUIRED_ENV_VARS = [
   'ADZUNA_APP_ID',
   'ADZUNA_APP_KEY',
   'FRONTEND_URL',
+  'TOKEN_ENCRYPTION_KEY',
 ];
 
 const validateEnv = () => {

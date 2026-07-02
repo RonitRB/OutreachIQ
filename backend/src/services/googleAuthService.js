@@ -1,5 +1,6 @@
 const { google } = require('googleapis');
 const UserProfile = require('../models/UserProfile');
+const { encrypt, decrypt } = require('./cryptoService');
 
 const createOAuth2Client = () =>
   new google.auth.OAuth2(
@@ -14,7 +15,8 @@ const getAccessToken = async (user) => {
   }
 
   const oauth2Client = createOAuth2Client();
-  oauth2Client.setCredentials({ refresh_token: user.googleRefreshToken });
+  const decryptedToken = decrypt(user.googleRefreshToken);
+  oauth2Client.setCredentials({ refresh_token: decryptedToken });
 
   const { token } = await oauth2Client.getAccessToken();
   if (!token) {
@@ -27,8 +29,9 @@ const getAccessToken = async (user) => {
 const persistRefreshToken = async (userId, refreshToken) => {
   if (!refreshToken) return;
 
+  const encryptedToken = encrypt(refreshToken);
   await UserProfile.findByIdAndUpdate(userId, {
-    googleRefreshToken: refreshToken,
+    googleRefreshToken: encryptedToken,
   });
 };
 

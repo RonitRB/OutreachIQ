@@ -36,6 +36,7 @@ jobs:
           ADZUNA_APP_ID: test-adzuna-id
           ADZUNA_APP_KEY: test-adzuna-key
           FRONTEND_URL: http://localhost:5173
+          TOKEN_ENCRYPTION_KEY: 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
 
       - name: Verify app loads
         run: node -e "require('./src/app'); console.log('app module ok'); process.exit(0)"
@@ -49,6 +50,7 @@ jobs:
           ADZUNA_APP_ID: test-adzuna-id
           ADZUNA_APP_KEY: test-adzuna-key
           FRONTEND_URL: http://localhost:5173
+          TOKEN_ENCRYPTION_KEY: 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
 
   frontend:
     runs-on: ubuntu-latest

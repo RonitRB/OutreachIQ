@@ -1,5 +1,6 @@
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const UserProfile = require('../models/UserProfile');
+const { encrypt } = require('../services/cryptoService');
 
 const configurePassport = (passport) => {
   passport.use(
@@ -13,6 +14,8 @@ const configurePassport = (passport) => {
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
+          const encryptedRefreshToken = refreshToken ? encrypt(refreshToken) : undefined;
+
           let user = await UserProfile.findOne({ googleId: profile.id });
 
           if (!user) {
@@ -21,14 +24,14 @@ const configurePassport = (passport) => {
               email: profile.emails[0].value,
               name: profile.displayName,
               avatar: profile.photos[0]?.value || '',
-              googleRefreshToken: refreshToken || undefined,
+              googleRefreshToken: encryptedRefreshToken,
             });
           } else {
             user.email = profile.emails[0].value;
             user.name = profile.displayName;
             user.avatar = profile.photos[0]?.value || '';
-            if (refreshToken) {
-              user.googleRefreshToken = refreshToken;
+            if (encryptedRefreshToken) {
+              user.googleRefreshToken = encryptedRefreshToken;
             }
             await user.save();
           }

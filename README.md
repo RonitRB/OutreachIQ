@@ -132,6 +132,7 @@ npm run dev
 | `ADZUNA_APP_ID` | Adzuna app ID | `abc12345` |
 | `ADZUNA_APP_KEY` | Adzuna API key | `xyz67890...` |
 | `FRONTEND_URL` | Frontend URL for CORS | `http://localhost:5173` |
+| `TOKEN_ENCRYPTION_KEY` | AES-256 key for encrypting refresh tokens (64 hex chars). Generate with `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"` | `a1b2c3...64chars` |
 
 ### Frontend (`frontend/.env`)
 
@@ -224,6 +225,7 @@ Production target: **Render** (backend) + **Vercel** (frontend) + **MongoDB Atla
 | `ADZUNA_APP_ID` | Your Adzuna app ID |
 | `ADZUNA_APP_KEY` | Your Adzuna API key |
 | `FRONTEND_URL` | `https://<your-vercel-app>.vercel.app` |
+| `TOKEN_ENCRYPTION_KEY` | Random 64-char hex string (generate with Node.js crypto) |
 
 ### Frontend → Vercel
 
