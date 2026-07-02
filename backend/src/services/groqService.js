@@ -9,7 +9,7 @@ const getGroq = () => {
 };
 
 const parseJSON = (text) => {
-  // Strip markdown code fences if present
+  // Strip markdown code fences if present (safety net)
   let cleaned = text.trim();
   if (cleaned.startsWith('```')) {
     cleaned = cleaned.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '');
@@ -29,31 +29,10 @@ const parseResume = async (rawText) => {
       ],
       model: 'llama-3.3-70b-versatile',
       temperature: 0.3,
+      response_format: { type: 'json_object' },
     });
 
-    const responseText = completion.choices[0].message.content;
-
-    try {
-      return parseJSON(responseText);
-    } catch (parseError) {
-      // Retry with stricter prompt
-      console.warn('First JSON parse failed, retrying with stricter prompt...');
-      const retryCompletion = await getGroq().chat.completions.create({
-        messages: [
-          {
-            role: 'system',
-            content:
-              systemPrompt +
-              ' Your previous response was not valid JSON. You MUST return ONLY a raw JSON object. No markdown code fences, no explanation.',
-          },
-          { role: 'user', content: rawText },
-        ],
-        model: 'llama-3.3-70b-versatile',
-        temperature: 0.1,
-      });
-
-      return parseJSON(retryCompletion.choices[0].message.content);
-    }
+    return parseJSON(completion.choices[0].message.content);
   } catch (error) {
     console.error('Groq parseResume error:', error.message);
     throw new Error('Failed to parse resume with AI');
@@ -97,30 +76,10 @@ Template Style: ${template.name} — ${template.description}`;
       ],
       model: 'llama-3.3-70b-versatile',
       temperature: 0.7,
+      response_format: { type: 'json_object' },
     });
 
-    const responseText = completion.choices[0].message.content;
-
-    try {
-      return parseJSON(responseText);
-    } catch (parseError) {
-      console.warn('First JSON parse failed for email, retrying...');
-      const retryCompletion = await getGroq().chat.completions.create({
-        messages: [
-          {
-            role: 'system',
-            content:
-              systemPrompt +
-              ' Your previous response was not valid JSON. You MUST return ONLY a raw JSON object. No markdown code fences, no explanation.',
-          },
-          { role: 'user', content: userPrompt },
-        ],
-        model: 'llama-3.3-70b-versatile',
-        temperature: 0.3,
-      });
-
-      return parseJSON(retryCompletion.choices[0].message.content);
-    }
+    return parseJSON(completion.choices[0].message.content);
   } catch (error) {
     console.error('Groq generateEmail error:', error.message);
     throw new Error('Failed to generate email with AI');
