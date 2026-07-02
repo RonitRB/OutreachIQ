@@ -9,6 +9,7 @@ const jobSchema = new mongoose.Schema({
   description: String,
   applyUrl: String,
   keyword: String,
+  searchLocation: { type: String, default: '' },
   cachedAt: { type: Date, default: Date.now, expires: 21600 },
 });
 

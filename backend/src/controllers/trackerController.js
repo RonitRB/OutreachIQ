@@ -36,6 +36,8 @@ const getApplications = async (req, res) => {
   }
 };
 
+const VALID_STATUSES = ['draft_created', 'sent', 'interview', 'rejected', 'no_response'];
+
 const updateStatus = async (req, res) => {
   try {
     const { id } = req.params;
@@ -43,6 +45,13 @@ const updateStatus = async (req, res) => {
 
     if (!status) {
       return res.status(400).json({ error: true, message: 'Status is required' });
+    }
+
+    if (!VALID_STATUSES.includes(status)) {
+      return res.status(400).json({
+        error: true,
+        message: `Invalid status. Must be one of: ${VALID_STATUSES.join(', ')}`,
+      });
     }
 
     const application = await AppliedJob.findById(id);

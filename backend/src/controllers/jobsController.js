@@ -9,12 +9,20 @@ const searchJobs = async (req, res) => {
       return res.status(400).json({ error: true, message: 'Keyword is required' });
     }
 
-    // Check cache: jobs with same keyword cached within last 6 hours
+    const normalizedKeyword = keyword.toLowerCase();
+    const normalizedLocation = (location || '').toLowerCase();
+
+    // Check cache: jobs with same keyword + location cached within last 6 hours
     const sixHoursAgo = new Date(Date.now() - 6 * 60 * 60 * 1000);
-    const cachedJobs = await Job.find({
-      keyword: keyword.toLowerCase(),
+    const cacheQuery = {
+      keyword: normalizedKeyword,
       cachedAt: { $gt: sixHoursAgo },
-    });
+    };
+    if (normalizedLocation) {
+      cacheQuery.searchLocation = normalizedLocation;
+    }
+
+    const cachedJobs = await Job.find(cacheQuery);
 
     if (cachedJobs.length > 0) {
       return res.json({ source: 'cache', jobs: cachedJobs });
@@ -31,7 +39,8 @@ const searchJobs = async (req, res) => {
           update: {
             $set: {
               ...job,
-              keyword: keyword.toLowerCase(),
+              keyword: normalizedKeyword,
+              searchLocation: normalizedLocation,
               cachedAt: new Date(),
             },
           },

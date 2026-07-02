@@ -49,6 +49,22 @@ const aiLimiter = rateLimit({
   message: { error: true, message: 'Too many requests, please try again later' },
 });
 
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 60,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: true, message: 'Too many requests, please try again later' },
+});
+
+const gmailLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 15,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: true, message: 'Too many Gmail requests, please try again later' },
+});
+
 // Sessions with MongoDB store
 app.use(session({
   secret: process.env.SESSION_SECRET,
@@ -92,10 +108,10 @@ app.get('/health', async (req, res) => {
 // Mount routes
 app.use('/auth', authLimiter, authRoutes);
 app.use('/resume', aiLimiter, resumeRoutes);
-app.use('/jobs', jobsRoutes);
+app.use('/jobs', apiLimiter, jobsRoutes);
 app.use('/email', aiLimiter, emailRoutes);
-app.use('/gmail', gmailRoutes);
-app.use('/tracker', trackerRoutes);
+app.use('/gmail', gmailLimiter, gmailRoutes);
+app.use('/tracker', apiLimiter, trackerRoutes);
 
 // 404 handler
 app.use((req, res) => {
