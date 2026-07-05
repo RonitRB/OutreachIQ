@@ -140,6 +140,15 @@ export default function Resume() {
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
           onClick={() => fileInputRef.current?.click()}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              fileInputRef.current?.click();
+            }
+          }}
+          tabIndex={0}
+          role="button"
+          aria-label="Upload resume PDF"
         >
           <div className="upload-icon">📄</div>
           <p className="upload-text">

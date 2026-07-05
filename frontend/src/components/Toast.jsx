@@ -33,11 +33,12 @@ export function ToastProvider({ children }) {
       {children}
       <div className="toast-container">
         {toasts.map((toast) => (
-          <div key={toast.id} className={`toast toast-${toast.type}`}>
+          <div key={toast.id} className={`toast toast-${toast.type}`} role="alert" aria-live="assertive">
             <span className="toast-message">{toast.message}</span>
             <button
               className="toast-close"
               onClick={() => removeToast(toast.id)}
+              aria-label="Dismiss notification"
             >
               &times;
             </button>
