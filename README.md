@@ -294,6 +294,21 @@ GitHub Actions (`.github/workflows/ci.yml`) runs on push/PR to `main`:
 
 ---
 
+## Documentation
+
+Detailed documentation is available in the [`docs/`](docs/) directory:
+
+| Document | Description |
+|---|---|
+| [`01-PRD.md`](docs/01-PRD.md) | Product Requirements — features, personas, constraints, roadmap |
+| [`02-TRD.md`](docs/02-TRD.md) | Technical Requirements — architecture, stack, API design, security |
+| [`03-APP-FLOW.md`](docs/03-APP-FLOW.md) | Application Flow — all 7 user journeys with detailed diagrams |
+| [`04-UI-UX-BRIEF.md`](docs/04-UI-UX-BRIEF.md) | UI/UX Brief — design tokens, components, layouts, accessibility |
+| [`05-BACKEND-SCHEMA.md`](docs/05-BACKEND-SCHEMA.md) | Backend Schema — all MongoDB collections, indexes, relationships |
+| [`06-IMPLEMENTATION-PLAN.md`](docs/06-IMPLEMENTATION-PLAN.md) | Implementation Plan — status, architecture decisions, deployment checklist |
+
+---
+
 ## License
 
 MIT License — see [LICENSE](LICENSE) for details.
