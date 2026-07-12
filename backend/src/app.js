@@ -105,7 +105,18 @@ app.get('/health', async (req, res) => {
   }
 });
 
-// Mount routes
+// Create API sub-router for Vercel /api rewrites
+const apiRouter = express.Router();
+apiRouter.use('/auth', authLimiter, authRoutes);
+apiRouter.use('/resume', aiLimiter, resumeRoutes);
+apiRouter.use('/jobs', apiLimiter, jobsRoutes);
+apiRouter.use('/email', aiLimiter, emailRoutes);
+apiRouter.use('/gmail', gmailLimiter, gmailRoutes);
+apiRouter.use('/tracker', apiLimiter, trackerRoutes);
+
+app.use('/api', apiRouter);
+
+// Mount routes at root for backward compatibility
 app.use('/auth', authLimiter, authRoutes);
 app.use('/resume', aiLimiter, resumeRoutes);
 app.use('/jobs', apiLimiter, jobsRoutes);
