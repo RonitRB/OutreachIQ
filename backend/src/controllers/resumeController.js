@@ -19,20 +19,20 @@ const parseResume = async (req, res) => {
     // Parse resume with Groq AI
     const parsed = await groqService.parseResume(rawText);
 
-    // Upsert user profile with extracted data
-    const updatedProfile = await UserProfile.findOneAndUpdate(
-      { googleId: req.user.googleId },
+    // Update user profile with extracted data
+    const updatedProfile = await UserProfile.findByIdAndUpdate(
+      req.user._id,
       {
         $set: {
           name: parsed.name || req.user.name,
           skills: parsed.skills || [],
           projects: parsed.projects || [],
           summary: parsed.summary || '',
-          rawText,
+          rawText: rawText,
           updatedAt: new Date(),
         },
       },
-      { new: true, upsert: true }
+      { new: true }
     );
 
     return res.json(updatedProfile);
@@ -44,11 +44,11 @@ const parseResume = async (req, res) => {
 
 const getProfile = async (req, res) => {
   try {
-    const profile = await UserProfile.findOne({ googleId: req.user.googleId });
-    if (!profile) {
+    // req.user is already the full UserProfile from passport deserialization
+    if (!req.user) {
       return res.status(404).json({ error: true, message: 'Profile not found' });
     }
-    return res.json(profile);
+    return res.json(req.user);
   } catch (error) {
     console.error('Get profile error:', error.message);
     return res.status(500).json({ error: true, message: 'Failed to fetch profile' });

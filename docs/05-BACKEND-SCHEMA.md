@@ -25,10 +25,9 @@ Stores authenticated user data and parsed resume information.
 | `skills` | [String] | — | `[]` | Parsed from resume (e.g., "React", "Node.js") |
 | `projects` | [String] | — | `[]` | Parsed from resume with context |
 | `summary` | String | — | `""` | AI-generated professional summary |
-| `rawResumeText` | String | — | `""` | Raw text extracted from PDF |
+| `rawText` | String | — | `""` | Raw text extracted from PDF |
 | `googleRefreshToken` | String | — | — | AES-256-GCM encrypted refresh token |
-| `createdAt` | Date | Auto | `now` | Mongoose timestamp |
-| `updatedAt` | Date | Auto | `now` | Mongoose timestamp |
+| `updatedAt` | Date | — | `now` | Last update timestamp |
 
 **Indexes:**
 - `googleId`: unique

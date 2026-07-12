@@ -1,5 +1,4 @@
 const Job = require('../models/Job');
-const UserProfile = require('../models/UserProfile');
 const EmailTemplate = require('../models/EmailTemplate');
 const groqService = require('../services/groqService');
 
@@ -30,12 +29,12 @@ const generateEmail = async (req, res) => {
       return res.status(404).json({ error: true, message: 'Job not found' });
     }
 
-    // Fetch user profile
-    const userProfile = await UserProfile.findOne({ googleId: req.user.googleId });
-    if (!userProfile) {
-      return res.status(404).json({
+    // User profile is already loaded by passport deserialization
+    const userProfile = req.user;
+    if (!userProfile.skills?.length && !userProfile.projects?.length) {
+      return res.status(400).json({
         error: true,
-        message: 'User profile not found. Please upload your resume first.',
+        message: 'Please upload your resume first so we can personalize the email.',
       });
     }
 
