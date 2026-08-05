@@ -1,5 +1,7 @@
 const Job = require('../models/Job');
 const adzunaService = require('../services/adzunaService');
+const logger = require('../utils/logger');
+
 
 const searchJobs = async (req, res) => {
   try {
@@ -53,7 +55,7 @@ const searchJobs = async (req, res) => {
 
     return res.json({ source: 'api', jobs });
   } catch (error) {
-    console.error('Search jobs error:', error.message);
+    logger.error('Search jobs error', { error: error.message, keyword: req.query.keyword, location: req.query.location });
     return res.status(500).json({ error: true, message: 'Failed to search jobs' });
   }
 };
@@ -66,7 +68,7 @@ const getJob = async (req, res) => {
     }
     return res.json(job);
   } catch (error) {
-    console.error('Get job error:', error.message);
+    logger.error('Get job error', { error: error.message, externalId: req.params.externalId });
     return res.status(500).json({ error: true, message: 'Failed to fetch job' });
   }
 };

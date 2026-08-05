@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 const AppliedJob = require('../models/AppliedJob');
+const logger = require('../utils/logger');
+
 
 // Strip HTML tags to prevent XSS in stored data
 const sanitize = (str) => {
@@ -28,7 +30,7 @@ const saveApplication = async (req, res) => {
     const application = await AppliedJob.create(applicationData);
     return res.status(201).json(application);
   } catch (error) {
-    console.error('Save application error:', error.message);
+    logger.error('Save application error', { error: error.message, userId: req.user?._id });
     return res.status(500).json({ error: true, message: 'Failed to save application' });
   }
 };
@@ -40,7 +42,7 @@ const getApplications = async (req, res) => {
     });
     return res.json(applications);
   } catch (error) {
-    console.error('Get applications error:', error.message);
+    logger.error('Get applications error', { error: error.message, userId: req.user?._id });
     return res.status(500).json({ error: true, message: 'Failed to fetch applications' });
   }
 };
@@ -84,7 +86,7 @@ const updateStatus = async (req, res) => {
 
     return res.json(application);
   } catch (error) {
-    console.error('Update status error:', error.message);
+    logger.error('Update status error', { error: error.message, applicationId: req.params.id });
     return res.status(500).json({ error: true, message: 'Failed to update status' });
   }
 };
@@ -112,7 +114,7 @@ const deleteApplication = async (req, res) => {
 
     return res.json({ message: 'Application deleted successfully' });
   } catch (error) {
-    console.error('Delete application error:', error.message);
+    logger.error('Delete application error', { error: error.message, applicationId: req.params.id });
     return res.status(500).json({ error: true, message: 'Failed to delete application' });
   }
 };

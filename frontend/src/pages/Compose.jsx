@@ -22,6 +22,7 @@ export default function Compose() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isCreatingDraft, setIsCreatingDraft] = useState(false);
   const [loadingJob, setLoadingJob] = useState(true);
+  const [jobError, setJobError] = useState(false);
 
   useEffect(() => {
     if (!jobId) {
@@ -32,7 +33,10 @@ export default function Compose() {
     api
       .get(`/jobs/${jobId}`)
       .then((res) => setJob(res.data))
-      .catch(() => addToast('Failed to load job details.', 'error'))
+      .catch(() => {
+        addToast('Failed to load job details.', 'error');
+        setJobError(true);
+      })
       .finally(() => setLoadingJob(false));
 
     api
@@ -103,7 +107,7 @@ export default function Compose() {
 
       // Open draft in new tab
       if (draftUrl) {
-        window.open(draftUrl, '_blank');
+        window.open(draftUrl, '_blank', 'noopener,noreferrer');
       }
 
       navigate('/tracker');
@@ -128,6 +132,15 @@ export default function Compose() {
         <div className="skeleton-container">
           <div className="skeleton skeleton-title" />
           <div className="skeleton skeleton-text" />
+        </div>
+      ) : jobError ? (
+        <div className="empty-state">
+          <div className="empty-icon">⚠️</div>
+          <h3>Job not found</h3>
+          <p>This job may have expired or been removed. Try searching for a new one.</p>
+          <button className="btn btn-primary" onClick={() => navigate('/jobs')}>
+            Back to Jobs
+          </button>
         </div>
       ) : (
         job && (

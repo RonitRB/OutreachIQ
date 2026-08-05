@@ -1,13 +1,15 @@
 const Job = require('../models/Job');
 const EmailTemplate = require('../models/EmailTemplate');
 const groqService = require('../services/groqService');
+const logger = require('../utils/logger');
+
 
 const getTemplates = async (req, res) => {
   try {
     const templates = await EmailTemplate.find({});
     return res.json(templates);
   } catch (error) {
-    console.error('Get templates error:', error.message);
+    logger.error('Get templates error', { error: error.message });
     return res.status(500).json({ error: true, message: 'Failed to fetch templates' });
   }
 };
@@ -54,7 +56,7 @@ const generateEmail = async (req, res) => {
 
     return res.json(email);
   } catch (error) {
-    console.error('Generate email error:', error.message);
+    logger.error('Generate email error', { error: error.message, jobId: req.body.jobId, templateId: req.body.templateId });
     return res.status(500).json({ error: true, message: 'Failed to generate email' });
   }
 };

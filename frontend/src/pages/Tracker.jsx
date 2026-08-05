@@ -102,6 +102,10 @@ export default function Tracker() {
               <span className="stat-label">Interview</span>
             </div>
             <div className="stat-card card">
+              <span className="stat-value">{stats.rejected}</span>
+              <span className="stat-label">Rejected</span>
+            </div>
+            <div className="stat-card card">
               <span className="stat-value">{stats.no_response}</span>
               <span className="stat-label">No Response</span>
             </div>

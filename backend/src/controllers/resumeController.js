@@ -1,6 +1,8 @@
 const pdfParse = require('pdf-parse');
 const UserProfile = require('../models/UserProfile');
 const groqService = require('../services/groqService');
+const logger = require('../utils/logger');
+
 
 const parseResume = async (req, res) => {
   try {
@@ -37,7 +39,7 @@ const parseResume = async (req, res) => {
 
     return res.json(updatedProfile);
   } catch (error) {
-    console.error('Resume parse error:', error.message);
+    logger.error('Resume parse error', { error: error.message, userId: req.user?._id });
     return res.status(500).json({ error: true, message: 'Failed to parse resume' });
   }
 };
@@ -50,7 +52,7 @@ const getProfile = async (req, res) => {
     }
     return res.json(req.user);
   } catch (error) {
-    console.error('Get profile error:', error.message);
+    logger.error('Get profile error', { error: error.message });
     return res.status(500).json({ error: true, message: 'Failed to fetch profile' });
   }
 };

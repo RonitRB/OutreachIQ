@@ -1,5 +1,7 @@
 const gmailService = require('../services/gmailService');
 const googleAuthService = require('../services/googleAuthService');
+const logger = require('../utils/logger');
+
 
 const createDraft = async (req, res) => {
   try {
@@ -22,7 +24,7 @@ const createDraft = async (req, res) => {
     const result = await gmailService.createDraft(accessToken, { subject, body, to });
     return res.json(result);
   } catch (error) {
-    console.error('Create draft error:', error.message);
+    logger.error('Create draft error', { error: error.message, userId: req.user?._id });
 
     if (error.code === 401 || error.response?.status === 401) {
       return res.status(401).json({

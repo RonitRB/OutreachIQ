@@ -1,7 +1,29 @@
 const axios = require('axios');
+const logger = require('../utils/logger');
 
 const ADZUNA_TIMEOUT_MS = 8000;
 const REMOTIVE_TIMEOUT_MS = 8000;
+const MAX_RETRIES = 2;
+
+const fetchWithRetry = async (url, config, retries = MAX_RETRIES) => {
+  try {
+    return await axios.get(url, config);
+  } catch (error) {
+    const isTimeout = error.code === 'ECONNABORTED';
+    const isServerError = error.response && error.response.status >= 500;
+    
+    if (retries > 0 && (isTimeout || isServerError)) {
+      logger.warn(`API request failed, retrying...`, { 
+        url, 
+        attemptsLeft: retries, 
+        error: error.message 
+      });
+      await new Promise(resolve => setTimeout(resolve, 1000 * (MAX_RETRIES - retries + 1))); // Simple backoff
+      return fetchWithRetry(url, config, retries - 1);
+    }
+    throw error;
+  }
+};
 
 const mapAdzunaResult = (result, keyword) => ({
   externalId: result.id.toString(),
@@ -30,7 +52,7 @@ const mapRemotiveResult = (job, keyword) => ({
 const searchJobs = async (keyword, location) => {
   // Try Adzuna first
   try {
-    const response = await axios.get(
+    const response = await fetchWithRetry(
       'https://api.adzuna.com/v1/api/jobs/in/search/1',
       {
         params: {
@@ -50,12 +72,12 @@ const searchJobs = async (keyword, location) => {
     }
   } catch (error) {
     const reason = error.code === 'ECONNABORTED' ? 'timeout' : error.message;
-    console.warn(`Adzuna API error (${reason}), falling back to Remotive`);
+    logger.warn(`Adzuna API error (${reason}), falling back to Remotive`);
   }
 
   // Fallback to Remotive
   try {
-    const response = await axios.get('https://remotive.com/api/remote-jobs', {
+    const response = await fetchWithRetry('https://remotive.com/api/remote-jobs', {
       params: {
         search: keyword,
         limit: 20,
@@ -68,7 +90,7 @@ const searchJobs = async (keyword, location) => {
     }
   } catch (error) {
     const reason = error.code === 'ECONNABORTED' ? 'timeout' : error.message;
-    console.warn(`Remotive API error (${reason})`);
+    logger.error(`Remotive API error (${reason})`);
   }
 
   return [];

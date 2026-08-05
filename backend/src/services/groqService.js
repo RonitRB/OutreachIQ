@@ -1,4 +1,6 @@
 const Groq = require('groq-sdk');
+const logger = require('../utils/logger');
+
 
 let _groq = null;
 const getGroq = () => {
@@ -34,7 +36,7 @@ const parseResume = async (rawText) => {
 
     return parseJSON(completion.choices[0].message.content);
   } catch (error) {
-    console.error('Groq parseResume error:', error.message);
+    logger.error('Groq parseResume error', { error: error.message });
     throw new Error('Failed to parse resume with AI');
   }
 };
@@ -81,7 +83,7 @@ Template Style: ${template.name} — ${template.description}`;
 
     return parseJSON(completion.choices[0].message.content);
   } catch (error) {
-    console.error('Groq generateEmail error:', error.message);
+    logger.error('Groq generateEmail error', { error: error.message });
     throw new Error('Failed to generate email with AI');
   }
 };

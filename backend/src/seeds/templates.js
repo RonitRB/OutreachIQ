@@ -1,4 +1,5 @@
 const EmailTemplate = require('../models/EmailTemplate');
+const logger = require('../utils/logger');
 
 const templates = [
   {
@@ -33,9 +34,9 @@ const seedTemplates = async () => {
         { upsert: true }
       );
     }
-    console.log('Email templates seeded');
+    logger.info('Email templates seeded');
   } catch (error) {
-    console.error('Error seeding templates:', error.message);
+    logger.error('Error seeding templates', { error: error.message });
   }
 };
 

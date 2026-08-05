@@ -1,4 +1,6 @@
 const passport = require('passport');
+const logger = require('../utils/logger');
+
 
 const googleAuth = passport.authenticate('google', {
   scope: [
@@ -37,11 +39,11 @@ const getMe = (req, res) => {
 const logout = (req, res) => {
   req.logout((err) => {
     if (err) {
-      console.error('Logout error:', err);
+      logger.error('Logout error', { error: err.message });
     }
     req.session.destroy((err) => {
       if (err) {
-        console.error('Session destroy error:', err);
+        logger.error('Session destroy error', { error: err.message });
       }
       res.redirect(process.env.FRONTEND_URL);
     });

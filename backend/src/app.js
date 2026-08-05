@@ -8,6 +8,8 @@ const passport = require('passport');
 const mongoose = require('mongoose');
 const multer = require('multer');
 const configurePassport = require('./config/passport');
+const logger = require('./utils/logger');
+
 
 // Route imports
 const authRoutes = require('./routes/auth');
@@ -32,6 +34,16 @@ app.use(cors({
 // Body parsing
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Request logging
+app.use((req, res, next) => {
+  logger.info(`${req.method} ${req.originalUrl}`, {
+    ip: req.ip,
+    userAgent: req.get('user-agent'),
+  });
+  next();
+});
+
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -142,7 +154,7 @@ app.use((err, req, res, next) => {
     return res.status(400).json({ error: true, message: err.message });
   }
 
-  console.error('Unhandled error:', err);
+  logger.error('Unhandled error', { error: err.message, stack: err.stack, path: req.originalUrl });
   res.status(500).json({ error: true, message: 'Internal server error' });
 });
 
