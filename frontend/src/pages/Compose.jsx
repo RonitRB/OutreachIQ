@@ -5,6 +5,7 @@ import { useToast } from '../components/Toast';
 import TemplateSelector from '../components/TemplateSelector';
 import ToneSelector from '../components/ToneSelector';
 import EmailComposer from '../components/EmailComposer';
+import EmailPreviewModal from '../components/EmailPreviewModal';
 
 export default function Compose() {
   const [searchParams] = useSearchParams();
@@ -23,6 +24,7 @@ export default function Compose() {
   const [isCreatingDraft, setIsCreatingDraft] = useState(false);
   const [loadingJob, setLoadingJob] = useState(true);
   const [jobError, setJobError] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
 
   useEffect(() => {
     if (!jobId) {
@@ -75,11 +77,15 @@ export default function Compose() {
     }
   };
 
-  const handleCreateDraft = async () => {
+  const handleRequestDraft = () => {
     if (!subject.trim() || !body.trim()) {
       addToast('Subject and body are required.', 'error');
       return;
     }
+    setShowPreview(true);
+  };
+
+  const handleCreateDraft = async () => {
 
     setIsCreatingDraft(true);
     try {
@@ -118,6 +124,7 @@ export default function Compose() {
       );
     } finally {
       setIsCreatingDraft(false);
+      setShowPreview(false);
     }
   };
 
@@ -194,9 +201,21 @@ export default function Compose() {
           onSubjectChange={setSubject}
           onBodyChange={setBody}
           onRegenerate={handleGenerate}
-          onCreateDraft={handleCreateDraft}
+          onCreateDraft={handleRequestDraft}
           isGenerating={isGenerating}
           isCreatingDraft={isCreatingDraft}
+        />
+      )}
+
+      {showPreview && (
+        <EmailPreviewModal
+          subject={subject}
+          body={body}
+          jobTitle={job?.title || ''}
+          company={job?.company || ''}
+          onConfirm={handleCreateDraft}
+          onCancel={() => setShowPreview(false)}
+          isLoading={isCreatingDraft}
         />
       )}
     </div>

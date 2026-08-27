@@ -137,13 +137,13 @@ export default function Tracker() {
                 <tbody>
                   {applications.map((app) => (
                     <tr key={app._id}>
-                      <td className="tracker-title">{app.title}</td>
-                      <td>{app.company}</td>
-                      <td>{app.templateUsed || '—'}</td>
-                      <td style={{ textTransform: 'capitalize' }}>
+                      <td className="tracker-title" data-label="Job">{app.title}</td>
+                      <td data-label="Company">{app.company}</td>
+                      <td data-label="Template">{app.templateUsed || '—'}</td>
+                      <td data-label="Tone" style={{ textTransform: 'capitalize' }}>
                         {app.toneUsed || '—'}
                       </td>
-                      <td>
+                      <td data-label="Status">
                         <select
                           className="input input-sm"
                           value={app.status}
@@ -158,7 +158,7 @@ export default function Tracker() {
                           ))}
                         </select>
                       </td>
-                      <td className="tracker-date">
+                      <td className="tracker-date" data-label="Date">
                         {formatDate(app.appliedAt)}
                       </td>
                       <td className="tracker-actions">

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const appliedJobSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'UserProfile' },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'UserProfile', index: true },
   jobId: String,
   title: String,
   company: String,

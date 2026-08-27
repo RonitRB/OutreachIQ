@@ -4,11 +4,10 @@
 
 ### AI-powered job discovery and personalized outreach, end to end.
 
-![OutreachIQ Screenshot](https://via.placeholder.com/800x450?text=OutreachIQ+Dashboard)
-
 [![Node.js](https://img.shields.io/badge/Node.js-18+-339933?style=flat-square&logo=node.js&logoColor=white)](https://nodejs.org/)
 [![React](https://img.shields.io/badge/React-18+-61DAFB?style=flat-square&logo=react&logoColor=black)](https://reactjs.org/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=flat-square&logo=mongodb&logoColor=white)](https://www.mongodb.com/atlas)
+[![Tests](https://img.shields.io/badge/Tests-12_passing-10b981?style=flat-square&logo=jest&logoColor=white)]()
 [![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](LICENSE)
 
 </div>
@@ -27,11 +26,15 @@ OutreachIQ is a full-stack web application that streamlines the job application 
 
 - 🔐 **Google OAuth Login** — Secure authentication with Google account
 - 📄 **AI Resume Parsing** — Upload a PDF resume and extract skills, projects, and summary using Groq LLM
-- 🔍 **Smart Job Search** — Search live jobs from Adzuna API with Remotive as fallback
+- 🔍 **Smart Job Search** — Search live jobs from Adzuna API with automatic Remotive fallback and retry logic
 - ✉️ **AI Email Generation** — Generate personalized application emails with 3 templates × 3 tones
+- 👁️ **Email Preview Modal** — Review your email subject and body in a confirmation modal before creating a draft
 - 📧 **Gmail Draft Creation** — Create drafts directly in your Gmail inbox via OAuth
-- 📊 **Application Tracker** — Track all applications with status management (Draft → Sent → Interview → Rejected/No Response)
+- 📊 **Application Tracker** — Track all applications with status management (Draft → Sent → Interview → Rejected / No Response)
+- 📱 **Fully Responsive** — Mobile-first design with card-based table layouts on small screens
 - 🎨 **Premium Dark UI** — Beautiful glassmorphism design with smooth animations
+- 📋 **Structured Logging** — Winston-based JSON logging in production for observability
+- 🔄 **Resilient APIs** — Exponential backoff retry for external API calls
 
 ---
 
@@ -40,13 +43,16 @@ OutreachIQ is a full-stack web application that streamlines the job application 
 | Layer | Technology | Purpose |
 |---|---|---|
 | **Backend** | Node.js + Express | REST API server |
-| **Frontend** | React + Vite | Single-page application |
+| **Frontend** | React 18 + Vite | Single-page application |
 | **Database** | MongoDB Atlas | Data persistence (Mongoose ODM) |
 | **LLM** | Groq API (Llama 3.3 70B) | Resume parsing + email generation |
-| **Jobs API** | Adzuna + Remotive | Live job listings |
+| **Jobs API** | Adzuna + Remotive | Live job listings with automatic fallback |
 | **Email** | Gmail API + OAuth 2.0 | Draft creation |
 | **Auth** | Passport.js (Google OAuth) | Authentication |
 | **File Upload** | Multer + pdf-parse | PDF resume processing |
+| **Logging** | Winston | Structured JSON logging (production) |
+| **Security** | Helmet + AES-256-GCM | HTTP hardening + token encryption |
+| **Testing** | Jest | Unit tests (12 passing) |
 
 ---
 
@@ -64,8 +70,8 @@ OutreachIQ is a full-stack web application that streamlines the job application 
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/yourusername/outreachiq.git
-cd outreachiq
+git clone https://github.com/RonitRB/OutreachIQ.git
+cd OutreachIQ
 ```
 
 ### 2. Backend setup
@@ -279,8 +285,19 @@ Production target: **Render** (backend) + **Vercel** (frontend) + **MongoDB Atla
 ### CI
 
 GitHub Actions (`.github/workflows/ci.yml`) runs on push/PR to `main`:
-- Backend: dependency install + module load verification
+- Backend: dependency install + module load verification + unit tests
 - Frontend: production build
+
+### Testing
+
+```bash
+cd backend
+npm test
+```
+
+Runs **12 unit tests** covering:
+- `cryptoService` — AES-256-GCM encrypt/decrypt round-trip, legacy token handling, missing key errors
+- `adzunaService` — Job data mapping, Remotive fallback, description truncation, error handling
 
 ---
 
