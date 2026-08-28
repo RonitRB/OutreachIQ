@@ -17,7 +17,7 @@ export default function Home({ user }) {
   };
 
   return (
-    <div className="page hero">
+    <div className="hero">
       <div className="hero-content">
         <h1 className="hero-title">OutreachIQ</h1>
         <p className="hero-tagline">

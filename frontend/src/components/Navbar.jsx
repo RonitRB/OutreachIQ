@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
 export default function Navbar({ user }) {
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
+  const navRef = useRef(null);
 
   const navLinks = [
     { to: '/jobs', label: 'Jobs' },
@@ -17,16 +18,42 @@ export default function Navbar({ user }) {
       '/auth/logout';
   };
 
+  // Close menu on outside click
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (menuOpen && navRef.current && !navRef.current.contains(e.target)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [menuOpen]);
+
+  // Close menu on Escape
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape' && menuOpen) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [menuOpen]);
+
   return (
-    <nav className="navbar">
+    <nav className="navbar" ref={navRef}>
       <Link to="/jobs" className="navbar-brand">
         OutreachIQ
       </Link>
 
       <button
         className={`navbar-hamburger ${menuOpen ? 'active' : ''}`}
-        onClick={() => setMenuOpen((prev) => !prev)}
-        aria-label="Toggle navigation"
+        onClick={(e) => {
+          e.stopPropagation();
+          setMenuOpen((prev) => !prev);
+        }}
+        aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+        aria-expanded={menuOpen}
       >
         <span className="hamburger-line" />
         <span className="hamburger-line" />
@@ -57,7 +84,7 @@ export default function Navbar({ user }) {
             <span className="navbar-username">{user.name}</span>
           </>
         )}
-        <button className="btn btn-logout" onClick={handleLogout}>
+        <button className="btn-logout" onClick={handleLogout}>
           Logout
         </button>
       </div>
